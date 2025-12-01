@@ -1,0 +1,14 @@
+# Python environment files
+__pycache__/
+venv/
+.env
+
+# PyTorch/Model files
+*.pth
+*.pt
+*.onnx
+
+# Data and Logging
+data/
+logs/
+uploads/ # Your Flask upload directory

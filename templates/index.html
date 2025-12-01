@@ -1,0 +1,76 @@
+<!Doctype html>
+<html lang="en">
+    <head>
+    <title>Dog vs Cat Image Classifier</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        .container { max-width: 600px; margin: auto; background: white; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); }
+        .result { margin-top: 20px; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; color: #155724; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; color: #721c24; border-color: #f5c6cb; }
+    </style>
+    </head>
+    <body>
+        <div class="container">
+            <h1>Dog or Cat? ResNet18 Predicts... </h1>
+            <p>Upload an image to classify</p>
+
+            <form id="upload-form" enctype="multipart/form-data">
+                <input type="file" name="file" id="file-input" accept="image/*" required/>
+                <button type="submit">Submit</button>
+            </form>
+
+            <div id="loading" style="display:none; color:#f5c6cb; margin-top: 15px;">
+                Loading.... Making predictions...
+            </div>
+
+            <div id="result-box" class="result" style="display:none;"></div>
+
+        </div>
+
+        <script>
+            document.getElementById('upload-form').addEventListener('submit',function(e){
+                e.preventDefault();
+                const form = e.target;
+                const formData = new FormData(form);
+                const resultbox = document.getElementById('result-box')
+                const loading = document.getElementById('loading');
+
+                resultbox.style.display = 'none';
+                loading.style.display = 'block';
+
+                fetch('/predict',{
+                    method : 'POST',
+                    body : formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    loading.style.display = 'none';
+                    resultbox.style.display = 'block';
+
+                    if (data.status === 'success'){
+                        resultbox.className = 'result success';
+                        resultbox.innerHTML = `
+                        <h2> Prediction successful </h2>
+                        <p><strong> Predicted class : </strong> ${data.class} </p>
+                        <p><strong> Confidence : </strong> ${data.confidence} </p>
+                        `;
+                    } else{
+                        resultbox.className = 'result error';
+                        resultbox.innerHTML = `<h2> Error </h2> <p>${data.error} </p>`
+                    }
+                })
+                .catch(error => {
+                    loading.style.display = 'none';
+                    resultbox.className = 'result error';
+                    resultbox.innerHTML = 'Error'
+                })
+
+            })
+        </script>
+
+
+
+
+    </body>
+</html>
